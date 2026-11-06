@@ -14,7 +14,7 @@
   },
   "keywords": [],
   "author": "Rahat Ali <rahatchaodhary@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "bugs": {
     "url": "https://github.com/RahatChoudhary/woo-agent/issues"
