@@ -3,7 +3,6 @@ import { loadConfig } from "../config.js";
 import { getClient, getAll } from "./client.js";
 
 // Raw zod shapes (plain objects of fields) so registerTool can use them directly.
-const price = z.string().regex(/^\d+(\.\d{1,2})?$/, "Price must look like 19.99");
 
 export const searchProductsInput = {
   query: z.string().trim().min(1),
@@ -17,17 +16,6 @@ export const getProductInput = {
 export const lowStockInput = {
   // When omitted, falls back to WOO_LOW_STOCK_THRESHOLD from config.
   threshold: z.number().int().min(0).max(100000).optional(),
-};
-
-export const updatePriceInput = {
-  id: z.number().int().positive(),
-  regular_price: price,
-  sale_price: price.optional(),
-};
-
-export const updateStockInput = {
-  id: z.number().int().positive(),
-  quantity: z.number().int().min(0).max(100000),
 };
 
 /** Longest description text returned to the model. */
@@ -150,19 +138,4 @@ export async function getLowStockProducts(threshold?: number): Promise<LowStockR
     .sort((a: any, b: any) => a.stock_quantity - b.stock_quantity)
     .map(toProductSummary);
   return { threshold: limit, count: products.length, truncated, products };
-}
-
-// Internal write helpers. Never expose these as tools directly:
-// they are only called by apply_change (T5) after propose/approve.
-export async function updateProductPrice(id: number, regularPrice: string, salePrice?: string) {
-  const body: Record<string, string> = { regular_price: regularPrice };
-  if (salePrice !== undefined) body.sale_price = salePrice;
-  const res = await getClient().put(`products/${id}`, body);
-  const p = res.data;
-  return { id: p.id, name: p.name, regular_price: p.regular_price, sale_price: p.sale_price };
-}
-
-export async function updateStock(id: number, quantity: number) {
-  const res = await getClient().put(`products/${id}`, { manage_stock: true, stock_quantity: quantity });
-  return { id: res.data.id, name: res.data.name, stock: res.data.stock_quantity };
 }

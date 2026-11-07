@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { describeForLog, toFriendlyMessage } from "../errors.js";
+import { applyChange, applyChangeInput, proposeChangeInput, proposeProductChange } from "../safety/changes.js";
 import { getCustomerByEmail, getCustomerInput } from "../woo/customers.js";
 import { getOrder, getOrderInput, listOrders, listOrdersInput } from "../woo/orders.js";
 import {
@@ -13,6 +14,11 @@ import {
 } from "../woo/products.js";
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true } as const;
+
+// Proposing changes nothing in the store (it only records a preview and an audit line).
+const PROPOSE = { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true } as const;
+// Applying overwrites live store data and each change_id works once.
+const APPLY = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true } as const;
 
 /**
  * Shared wrapper for every tool handler: JSON text on success, isError with a
@@ -115,5 +121,38 @@ export function registerReadTools(server: McpServer): void {
         const customer = await getCustomerByEmail(email);
         return customer ?? { found: false, message: "No registered customer has that email address." };
       }),
+  );
+}
+
+/** Change tools. Never call this in read-only mode: the tools must not exist at all. */
+export function registerWriteTools(server: McpServer): void {
+  server.registerTool(
+    "propose_product_change",
+    {
+      title: "Propose product change",
+      description:
+        "Use when the user wants to change one product's regular price, sale price or stock quantity. " +
+        "Changes nothing: returns a before/after preview and a one-time change_id that expires in 10 minutes. " +
+        "Show the preview to the user and wait for explicit approval before calling apply_change. " +
+        "Use sale_price \"\" to end a sale. The server blocks regular price changes over the configured limit, " +
+        "sale prices at or above the regular price, and variable products; don't try to work around a block.",
+      inputSchema: proposeChangeInput,
+      annotations: PROPOSE,
+    },
+    (args) => runTool("propose_product_change", () => proposeProductChange(args)),
+  );
+
+  server.registerTool(
+    "apply_change",
+    {
+      title: "Apply change",
+      description:
+        "Use only after the user has seen the preview from propose_product_change and explicitly approved that exact change. " +
+        "Applies it to the live store. Each change_id works once and expires 10 minutes after the proposal; " +
+        "if it is rejected as unknown, used, expired or out of date, propose the change again.",
+      inputSchema: applyChangeInput,
+      annotations: APPLY,
+    },
+    ({ change_id }) => runTool("apply_change", () => applyChange(change_id)),
   );
 }
