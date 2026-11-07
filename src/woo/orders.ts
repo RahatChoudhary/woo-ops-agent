@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { wc } from "./client.js";
+import { getClient } from "./client.js";
 
 // Raw zod shape (plain object of fields) so registerTool can use it directly.
 export const listOrdersInput = {
@@ -10,7 +10,7 @@ export const listOrdersInput = {
 export async function listOrders(status?: string, limit = 20) {
   const params: Record<string, unknown> = { per_page: limit };
   if (status) params.status = status;
-  const res = await wc.get("orders", params);
+  const res = await getClient().get("orders", params);
   return res.data.map((o: any) => ({
     id: o.id,
     status: o.status,
@@ -22,7 +22,7 @@ export async function listOrders(status?: string, limit = 20) {
 }
 
 export async function getOrder(id: number) {
-  const { data: o } = await wc.get(`orders/${id}`);
+  const { data: o } = await getClient().get(`orders/${id}`);
   return {
     id: o.id,
     status: o.status,

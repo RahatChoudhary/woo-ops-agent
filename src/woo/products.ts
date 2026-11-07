@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { wc, getAll } from "./client.js";
+import { getClient, getAll } from "./client.js";
 
 // Raw zod shapes (plain objects of fields) so registerTool can use them directly.
 const price = z.string().regex(/^\d+(\.\d{1,2})?$/, "Price must look like 19.99");
@@ -31,7 +31,7 @@ export async function getLowStockProducts(threshold = 5) {
 }
 
 export async function searchProducts(query: string) {
-  const res = await wc.get("products", { search: query, per_page: 20 });
+  const res = await getClient().get("products", { search: query, per_page: 20 });
   return res.data.map((p: any) => ({
     id: p.id, name: p.name, sku: p.sku, price: p.price,
     regular_price: p.regular_price, sale_price: p.sale_price, stock: p.stock_quantity, status: p.status,
@@ -43,12 +43,12 @@ export async function searchProducts(query: string) {
 export async function updateProductPrice(id: number, regularPrice: string, salePrice?: string) {
   const body: Record<string, string> = { regular_price: regularPrice };
   if (salePrice !== undefined) body.sale_price = salePrice;
-  const res = await wc.put(`products/${id}`, body);
+  const res = await getClient().put(`products/${id}`, body);
   const p = res.data;
   return { id: p.id, name: p.name, regular_price: p.regular_price, sale_price: p.sale_price };
 }
 
 export async function updateStock(id: number, quantity: number) {
-  const res = await wc.put(`products/${id}`, { manage_stock: true, stock_quantity: quantity });
+  const res = await getClient().put(`products/${id}`, { manage_stock: true, stock_quantity: quantity });
   return { id: res.data.id, name: res.data.name, stock: res.data.stock_quantity };
 }
