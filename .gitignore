@@ -3,3 +3,4 @@ node_modules
 .venv
 orders.csv
 __pycache__
+.DS_Store
