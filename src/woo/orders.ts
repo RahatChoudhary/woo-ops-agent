@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UserError } from "../errors.js";
 import { getClient } from "./client.js";
 
 export const ORDER_STATUSES = [
@@ -44,7 +45,7 @@ export type ListOrdersOptions = {
 export function toWooDate(value: string): string {
   const v = value.trim();
   if (!DATE_RE.test(v) || Number.isNaN(Date.parse(v))) {
-    throw new Error(`Invalid date "${v}". Use a date like 2026-01-31 or 2026-01-31T14:00:00.`);
+    throw new UserError(`Invalid date "${v}". Use a date like 2026-01-31 or 2026-01-31T14:00:00.`);
   }
   return v.length === 10 ? `${v}T00:00:00` : v;
 }
@@ -131,7 +132,7 @@ export async function listOrders(options: ListOrdersOptions = {}): Promise<Order
   if (options.after) params.after = toWooDate(options.after);
   if (options.before) params.before = toWooDate(options.before);
   if (params.after && params.before && Date.parse(String(params.after)) >= Date.parse(String(params.before))) {
-    throw new Error("The 'after' date must be earlier than the 'before' date.");
+    throw new UserError("The 'after' date must be earlier than the 'before' date.");
   }
 
   const res = await getClient().get("orders", params);
