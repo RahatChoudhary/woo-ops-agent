@@ -15,20 +15,20 @@ with human approval before any change is made.
 > Approve change? update_stock {"id": 34, "quantity": 40} (y/n)
 
 ## Architecture
-- `wc.ts` WooCommerce REST client returning trimmed data
-- `tools.ts` tool definitions, Zod validation, read/write flags
-- `agent.ts` tool-calling loop with step limit, confirmation gate and error handling
-- `cli.ts` terminal chat with conversation memory
+MCP server (stdio) that talks only to your WooCommerce store. See `CLAUDE.md` for the layout:
+- `src/woo/` WooCommerce client and trimmed read functions (products, orders, customers)
+- `src/mcp/`, `src/safety/` MCP tools and propose/apply safety layer (in progress)
 
 ## Design decisions
 - **Human-in-the-loop for writes:** the model never changes data directly
 - **Trimmed tool outputs:** 4-8 fields per record to reduce cost and confusion
 - **Errors as data:** failed calls return is_error results the model can explain
 
-## Run it
+## Run it (development)
 1. Copy `.env.example` to `.env` and fill in keys
 2. `npm install`
-3. `npm run chat`
+3. `npm run build`
+4. `npm run test:wc` to smoke-check the read functions against your store
 
 ## Roadmap
 - MCP server version usable from Claude Desktop and other MCP clients
