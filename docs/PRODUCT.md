@@ -43,7 +43,7 @@ Store owners spend time clicking through WooCommerce admin to answer simple ques
 **Business rules enforced in code:**
 
 - Regular price changes larger than `WOO_MAX_PRICE_CHANGE_PCT` (default 50%) are blocked.
-- Sale price must be lower than the regular price.
+- Sale price must be lower than the regular price, and no more than `WOO_MAX_PRICE_CHANGE_PCT` below it.
 - Stock must be a whole number from 0 to 100,000.
 - Change ids are single-use and expire after 10 minutes.
 - Every proposal and applied change is written to an audit log.
@@ -65,7 +65,7 @@ Store owners spend time clicking through WooCommerce admin to answer simple ques
 | `WC_KEY` | Yes | | WooCommerce consumer key (`ck_...`) |
 | `WC_SECRET` | Yes | | WooCommerce consumer secret (`cs_...`) |
 | `WOO_READ_ONLY` | No | `false` | `true` hides all change tools |
-| `WOO_MAX_PRICE_CHANGE_PCT` | No | `50` | Largest allowed regular price change |
+| `WOO_MAX_PRICE_CHANGE_PCT` | No | `50` | Largest allowed regular price change, and largest sale discount off the regular price |
 | `WOO_LOW_STOCK_THRESHOLD` | No | `5` | Default threshold for low stock |
 | `WOO_QUERY_STRING_AUTH` | No | `false` | `true` for hosts that strip auth headers (HTTPS only) |
 | `WOO_TIMEOUT_MS` | No | `15000` | Store API timeout |

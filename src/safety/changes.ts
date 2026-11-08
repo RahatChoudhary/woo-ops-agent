@@ -214,6 +214,15 @@ export function evaluateChange(product: any, input: ProposeInput, maxPriceChange
             `(${(regularAfter / 100).toFixed(2)}).`,
         );
       }
+      // The same limit caps the sale discount, so a sale can't do what a regular price cut can't (e.g. 0.01).
+      if ((regularAfter - saleAfter) * 100 > maxPriceChangePct * regularAfter) {
+        const pct = (((regularAfter - saleAfter) / regularAfter) * 100).toFixed(1);
+        throw new UserError(
+          `Blocked: a sale price of ${(saleAfter / 100).toFixed(2)} is ${pct}% below the regular price ` +
+            `(${(regularAfter / 100).toFixed(2)}), over the allowed limit of ${maxPriceChangePct}% ` +
+            "(WOO_MAX_PRICE_CHANGE_PCT). If this is intended, make it in WooCommerce admin.",
+        );
+      }
     }
   }
 

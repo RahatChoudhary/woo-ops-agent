@@ -135,7 +135,8 @@ export function registerWriteTools(server: McpServer): void {
         "Changes nothing: returns a before/after preview and a one-time change_id that expires in 10 minutes. " +
         "Show the preview to the user and wait for explicit approval before calling apply_change. " +
         "Use sale_price \"\" to end a sale. The server blocks regular price changes over the configured limit, " +
-        "sale prices at or above the regular price, and variable products; don't try to work around a block.",
+        "sale prices at or above the regular price or discounted more than that limit, and variable products; " +
+        "don't try to work around a block.",
       inputSchema: proposeChangeInput,
       annotations: PROPOSE,
     },

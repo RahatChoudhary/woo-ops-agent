@@ -103,6 +103,37 @@ describe("propose_product_change", () => {
     );
   });
 
+  it("blocks a sale price more than the limit below the regular price", async () => {
+    await expect(proposeProductChange({ product_id: 10, sale_price: "4.00" })).rejects.toThrow(
+      /sale price of 4\.00 is 80\.0% below the regular price \(20\.00\), over the allowed limit of 50%/,
+    );
+    expect(store.put).not.toHaveBeenCalled();
+    expect(auditEvents()).toEqual(["blocked"]);
+  });
+
+  it("blocks a 0.01 sale price", async () => {
+    await expect(proposeProductChange({ product_id: 10, sale_price: "0.01" })).rejects.toThrow(/over the allowed limit/);
+  });
+
+  it("allows a sale exactly at the limit", async () => {
+    const preview = await proposeProductChange({ product_id: 10, sale_price: "10.00" });
+    expect(preview.changes).toEqual([{ field: "sale_price", before: "18.00", after: "10.00" }]);
+  });
+
+  it("checks the sale discount against the new regular price", async () => {
+    // Raising regular to 30 makes the 10.00 sale 66.7% off.
+    await expect(
+      proposeProductChange({ product_id: 10, regular_price: "30.00", sale_price: "10.00" }),
+    ).rejects.toThrow(/66\.7% below the regular price \(30\.00\)/);
+  });
+
+  it("blocks raising the regular price when the existing sale would go over the limit", async () => {
+    product.sale_price = "10.00";
+    await expect(proposeProductChange({ product_id: 10, regular_price: "25.00" })).rejects.toThrow(
+      /sale price of 10\.00 is 60\.0% below/,
+    );
+  });
+
   it("allows ending a sale with an empty sale price", async () => {
     const preview = await proposeProductChange({ product_id: 10, sale_price: "" });
     expect(preview.changes).toEqual([{ field: "sale_price", before: "18.00", after: null }]);
