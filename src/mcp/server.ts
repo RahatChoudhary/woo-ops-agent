@@ -5,7 +5,7 @@ import { registerResources } from "./resources.js";
 import { registerReadTools, registerWriteTools } from "./tools.js";
 
 export const SERVER_NAME = "woo-ops-mcp";
-export const SERVER_VERSION = "1.0.0";
+export const SERVER_VERSION = "0.9.0";
 
 /**
  * Builds the MCP server with its tools, resources and prompts registered. Transport is attached by the caller.
