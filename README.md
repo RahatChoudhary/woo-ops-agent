@@ -5,10 +5,7 @@
 
 **Manage your WooCommerce store by chatting with Claude, Cursor or any MCP app, with your approval before anything changes.**
 
-<!-- TODO demo GIF (question → answer → sale preview → approval → applied). Add it as docs/demo.gif and replace this comment with:
-![Demo](docs/demo.gif) -->
-
-> 🎬 _Demo GIF coming soon._
+![Demo: ask about low stock, preview a sale, approve it, and the change is applied](https://raw.githubusercontent.com/RahatChoudhary/woo-ops-agent/main/docs/demo.gif)
 
 ## What you can ask
 
