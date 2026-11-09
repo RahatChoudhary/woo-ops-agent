@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The package no longer ships source maps (`.js.map`), so the install is smaller. They pointed to source files that are not included in the package.
+- The test run now fails if no tests are found, so a misconfigured test setup can never let an untested version be published.
+
 ## [1.0.0] - 2026-11-09
 
 First public release.
@@ -33,4 +40,5 @@ First public release.
 - Store content (product descriptions, order and customer notes) is treated as data, never as instructions.
 - Store API calls time out (`WOO_TIMEOUT_MS`) and return clear error messages.
 
+[Unreleased]: https://github.com/RahatChoudhary/woo-ops-agent/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/RahatChoudhary/woo-ops-agent/releases/tag/v1.0.0

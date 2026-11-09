@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', 0o755)\"",
     "dev": "tsx --env-file=.env src/index.ts",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "inspect": "npx @modelcontextprotocol/inspector node --env-file=.env dist/index.js",
     "test:wc": "tsx --env-file=.env scripts/test-wc.ts",
     "prepublishOnly": "npm run build && npm test"
