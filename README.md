@@ -1,5 +1,8 @@
 # Woo Ops MCP
 
+[![CI](https://github.com/RahatChoudhary/woo-ops-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/RahatChoudhary/woo-ops-agent/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/woo-ops-mcp)](https://www.npmjs.com/package/woo-ops-mcp)
+
 **Manage your WooCommerce store by chatting with Claude, Cursor or any MCP app, with your approval before anything changes.**
 
 <!-- TODO demo GIF (question → answer → sale preview → approval → applied). Add it as docs/demo.gif and replace this comment with:
